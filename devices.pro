@@ -4,10 +4,10 @@
 /* ^^^ Load dependencies ^^^ */
 
  /*-----------------------------------------------------------------*\
-|
-|  Program: Prolog Music studio device <=> Cable cross-referencer
-|  Author: "Gene Boggs" <gene+MusicStudio@ology>
-|
+
+|  Program: Prolog Music studio device <=> Cable cross-referencer    |
+|  Author: "Gene Boggs" <gene+MusicStudio@ology>                     |
+
  \*-----------------------------------------------------------------*/
 
 /* Facts: The equipment records - device(Name, Ports) */
@@ -84,7 +84,7 @@ device_cable(Device, Cable, [_|Tail]) :-
 
 /* Rule: Devices connect to other devices! */
 /* TODO Handle cable male-female */
-connects(DeviceA, DeviceB) :-
+device_connect(DeviceA, DeviceB) :-
     device_cable(DeviceA, Cable),
     device_cable(DeviceB, Cable).
 
