@@ -3,12 +3,12 @@
 :- ensure_loaded('cables.pro').
 /* ^^^ Load dependencies ^^^ */
 
- /*-----------------------------------------------------------------*\
+ /*----------------------------------------------------------------*\
 
 |  Program: Prolog Music studio device <=> Cable cross-referencer    |
 |  Author: "Gene Boggs" <gene+MusicStudio@ology>                     |
 
- \*-----------------------------------------------------------------*/
+ \*----------------------------------------------------------------*/
 
 /* Facts: The equipment records - device(Name, Ports) */
 /* TODO Use DBI to declare facts, instead of hardcoding. */

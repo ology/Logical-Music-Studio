@@ -1,9 +1,9 @@
- /*-----------------------------------------------------------------*\
-|
-| Program: Prolog Music studio cable definitions
-| Author: "Gene Boggs" <gene+MusicStudio@ology>
-|
- \*-----------------------------------------------------------------*/
+ /*----------------------------------------------------------------*\
+
+| Program: Prolog Music studio cable definitions                     |
+| Author: "Gene Boggs" <gene+MusicStudio@ology>                      |
+
+ \*----------------------------------------------------------------*/
 
 /* half_cable(EndA, Gender, Size) */
 /* TODO Use DBI to declare facts, instead of hardcoding. */

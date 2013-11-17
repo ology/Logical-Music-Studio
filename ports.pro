@@ -1,12 +1,12 @@
 :- ensure_loaded('cables.pro').
 /* ^^^ Load dependencies ^^^ */
 
- /*-----------------------------------------------------------------*\
-|
-|  Program: Prolog Music studio device port definitions.
-|  Author: "Gene Boggs" <gene+MusicStudio@ology>
-|
- \*-----------------------------------------------------------------*/
+ /*----------------------------------------------------------------*\
+
+|  Program: Prolog Music studio device port definitions.             |
+|  Author: "Gene Boggs" <gene+MusicStudio@ology>                     |
+
+ \*----------------------------------------------------------------*/
 
 /* port(Name_on_devices, Type, IO, Size) */
 /* TODO Use DBI to declare facts, instead of hardcoding. */
