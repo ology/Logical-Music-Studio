@@ -1,4 +1,9 @@
-Logical-Music-Studio
+Logical Music Studio
 ====================
 
-Prolog driven, device &lt;= cable(s) => devide connection deduction :-)
+Prolog driven music studio, from the ground up.
+
+Thus far: **device** &lt;= **cable(s)** => **device**, connection deduction.
+
+To come: The Future™
+
