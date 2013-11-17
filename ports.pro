@@ -3,9 +3,8 @@
 
  /*-----------------------------------------------------------------*\
 |
-|  Program: Music studio device port definitions.
-|  Language: Prolog
-|  Author: Gene Boggs
+|  Program: Prolog Music studio device port definitions.
+|  Author: "Gene Boggs" <gene+MusicStudio@ology>
 |
  \*-----------------------------------------------------------------*/
 

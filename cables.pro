@@ -1,8 +1,7 @@
  /*-----------------------------------------------------------------*\
 |
-| Program: Music studio cable definitions
-| Language: Prolog
-| Author: Gene Boggs
+| Program: Prolog Music studio cable definitions
+| Author: "Gene Boggs" <gene+MusicStudio@ology>
 |
  \*-----------------------------------------------------------------*/
 

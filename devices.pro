@@ -5,9 +5,8 @@
 
  /*-----------------------------------------------------------------*\
 |
-|  Program: Music studio device <=> Cable cross-referencer
-|  Language: Prolog
-|  Author: Gene Boggs
+|  Program: Prolog Music studio device <=> Cable cross-referencer
+|  Author: "Gene Boggs" <gene+MusicStudio@ology>
 |
  \*-----------------------------------------------------------------*/
 
