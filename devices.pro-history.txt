@@ -1,0 +1,961 @@
+commit 8fe151e58e025bca94eaab6da26a6f70d26e58d8
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Moved to the Logical-Music-Studio
+
+diff --git a/devices.pro b/devices.pro
+deleted file mode 100644
+index 88e5f5c..0000000
+--- a/devices.pro
++++ /dev/null
+@@ -1,90 +0,0 @@
+-:- use_module(list_extras, [print_list/1]).
+-:- ensure_loaded('ports.pro').
+-:- ensure_loaded('cables.pro').
+-/* ^^^ Load dependencies ^^^ */
+-
+- /*-----------------------------------------------------------------*\
+-|
+-|  Program: Music studio device <=> Cable cross-referencer
+-|  Language: Prolog
+-|  Author: Gene Boggs
+-|
+- \*-----------------------------------------------------------------*/
+-
+-/* Facts: The equipment records - device(Name, Ports) */
+-/* TODO Use DBI to declare these, instead of in-line hardcoding. */
+-device(maudio-monitors, [
+-    left-quarter-in, right-quarter-in,
+-    left-rca-in, right-rca-in,
+-    left-wire-in, right-wire-in ]).
+-device(amplifier, [ left-quarter-in ]).
+-device(macbook-pro, [ stereo-mini-in, stereo-mini-out ]).
+-device(korg-ms2000r, [
+-    midi-in, midi-thru, midi-out,
+-    left-quarter-in, right-quarter-in,
+-    left-quarter-out, right-quarter-out ]).
+-device(nord-lead-ii, [
+-    midi-in, midi-thru, midi-out,
+-    left-quarter-out, right-quarter-out,
+-    quarter-out3, quarter-out4 ]).
+-device(roland-gr, [
+-    midi-in, midi-out, roland-midi-in,
+-    left-quarter-in, right-quarter-in,
+-    left-quarter-out, right-quarter-out,
+-    quarter-out ]).
+-device(godin-acs, [ roland-midi-out, quarter-out ]).
+-device(yamaha-dtxtreme-iii, [
+-    midi-in, midi-out,
+-    stereo-quarter-in,
+-    left-quarter-out, right-quarter-out,
+-    quarter-out, quarter-out2,
+-    quarter-out3, quarter-out4,
+-    quarter-out5, quarter-out6,
+-    digital-out ]).
+-device(maudio-keyboard-interface, [
+-    midi-in, midi-out,
+-    stereo-quarter-in,
+-    quarter-in,
+-    xlr-in ]).
+-device(behringer-mixer, [
+-    left-quarter-out, right-quarter-out,
+-    quarter-out3, quarter-out4,
+-    left-xlr-out, right-xlr-out,
+-    xlr-in, xlr-in2, xlr-in3, xlr-in4,
+-    xlr-in4, xlr-in5, xlr-in6, xlr-in7,
+-    quarter-in, quarter-in2, quarter-in3, quarter-in4,
+-    left-rca-in, right-rca-in,
+-    left-rca-out, right-rca-out,
+-    aux-send, aux-send2,
+-    left-aux-return, right-aux-return,
+-    left-aux-return2, right-aux-return2 ]).
+-device(digitech-processor, [
+-    midi-in, midi-out,
+-    left-quarter-out, right-quarter-out,
+-    aux-send, aux-send2,
+-    left-aux-return, right-aux-return ]).
+-device(microphone, [ xlr-out ]).
+-
+-/* Procedure: Show the ports for the given device. */
+-show_ports(Device) :-
+-    device(Device, Ports),
+-    print_list(Ports).
+-
+-/* Rule: Devices connect their ports with cables */
+-/* device_cable/2 */
+-device_cable(Device, Cable) :-
+-    device(Device, Ports),
+-    device_cable(Device, Cable, Ports).
+-/* device_cable/3 */
+-device_cable(_, Cable, [Head|_]) :-
+-    port(Head, Cable, _, Size),
+-    full_cable(Cable, male, Size, _).
+-device_cable(Device, Cable, [_|Tail]) :-
+-    device_cable(Device, Cable, Tail).
+-
+-/* Rule: Devices connect to other devices! */
+-/* TODO Handle cable male-female */
+-connects(DeviceA, DeviceB) :-
+-    device_cable(DeviceA, Cable),
+-    device_cable(DeviceB, Cable).
+-
+
+commit 71f3a4a218374aa20cdad5ec4d3b656c316563ee
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Multiple changes:
+    
+    Removed storage cruft
+    Removed cords named guitar-
+    Added a microphone device
+    Improved connects/2 rule
+
+diff --git a/devices.pro b/devices.pro
+index fd77ddd..88e5f5c 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -24,7 +24,6 @@ device(korg-ms2000r, [
+     left-quarter-in, right-quarter-in,
+     left-quarter-out, right-quarter-out ]).
+ device(nord-lead-ii, [
+-    pcmcia,
+     midi-in, midi-thru, midi-out,
+     left-quarter-out, right-quarter-out,
+     quarter-out3, quarter-out4 ]).
+@@ -32,8 +31,8 @@ device(roland-gr, [
+     midi-in, midi-out, roland-midi-in,
+     left-quarter-in, right-quarter-in,
+     left-quarter-out, right-quarter-out,
+-    guitar-quarter-out ]).
+-device(godin-acs, [ roland-midi-out, guitar-quarter-out ]).
++    quarter-out ]).
++device(godin-acs, [ roland-midi-out, quarter-out ]).
+ device(yamaha-dtxtreme-iii, [
+     midi-in, midi-out,
+     stereo-quarter-in,
+@@ -64,6 +63,7 @@ device(digitech-processor, [
+     left-quarter-out, right-quarter-out,
+     aux-send, aux-send2,
+     left-aux-return, right-aux-return ]).
++device(microphone, [ xlr-out ]).
+ 
+ /* Procedure: Show the ports for the given device. */
+ show_ports(Device) :-
+@@ -83,5 +83,8 @@ device_cable(Device, Cable, [_|Tail]) :-
+     device_cable(Device, Cable, Tail).
+ 
+ /* Rule: Devices connect to other devices! */
+-connects(DeviceA, DeviceB).
++/* TODO Handle cable male-female */
++connects(DeviceA, DeviceB) :-
++    device_cable(DeviceA, Cable),
++    device_cable(DeviceB, Cable).
+ 
+
+commit cb9cfca572abf2c2a12192dd1db0a04c49161a71
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Rearrange rules in order of development
+
+diff --git a/devices.pro b/devices.pro
+index cf09c32..fd77ddd 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -65,8 +65,10 @@ device(digitech-processor, [
+     aux-send, aux-send2,
+     left-aux-return, right-aux-return ]).
+ 
+-/* Rule: Devices connect to other devices! */
+-connects(DeviceA, DeviceB).
++/* Procedure: Show the ports for the given device. */
++show_ports(Device) :-
++    device(Device, Ports),
++    print_list(Ports).
+ 
+ /* Rule: Devices connect their ports with cables */
+ /* device_cable/2 */
+@@ -80,8 +82,6 @@ device_cable(_, Cable, [Head|_]) :-
+ device_cable(Device, Cable, [_|Tail]) :-
+     device_cable(Device, Cable, Tail).
+ 
+-/* Procedure: Show the ports for the given device. */
+-show_ports(Device) :-
+-    device(Device, Ports),
+-    print_list(Ports).
++/* Rule: Devices connect to other devices! */
++connects(DeviceA, DeviceB).
+ 
+
+commit 5ed3ded786cade6718507b09cdf2d7d240a0a39d
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    WIP: connects/2
+
+diff --git a/devices.pro b/devices.pro
+index 0b25186..cf09c32 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -65,6 +65,9 @@ device(digitech-processor, [
+     aux-send, aux-send2,
+     left-aux-return, right-aux-return ]).
+ 
++/* Rule: Devices connect to other devices! */
++connects(DeviceA, DeviceB).
++
+ /* Rule: Devices connect their ports with cables */
+ /* device_cable/2 */
+ device_cable(Device, Cable) :-
+
+commit 202db81c792830c2ab10cdb819a1fd4208fcc4fc
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Improved header comment again!
+
+diff --git a/devices.pro b/devices.pro
+index c6e4331..0b25186 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -2,14 +2,14 @@
+ :- ensure_loaded('ports.pro').
+ :- ensure_loaded('cables.pro').
+ /* ^^^ Load dependencies ^^^ */
+-/********************************************************************\
+ 
+-Program: Music studio device <=> Cable cross-referencer
+-Language: Prolog
+-Author: Gene Boggs
+-Start date: 2013-11-09
+-
+-\********************************************************************/
++ /*-----------------------------------------------------------------*\
++|
++|  Program: Music studio device <=> Cable cross-referencer
++|  Language: Prolog
++|  Author: Gene Boggs
++|
++ \*-----------------------------------------------------------------*/
+ 
+ /* Facts: The equipment records - device(Name, Ports) */
+ /* TODO Use DBI to declare these, instead of in-line hardcoding. */
+@@ -65,8 +65,7 @@ device(digitech-processor, [
+     aux-send, aux-send2,
+     left-aux-return, right-aux-return ]).
+ 
+-/* Rule: Devices connect their ports with cables
+-*/
++/* Rule: Devices connect their ports with cables */
+ /* device_cable/2 */
+ device_cable(Device, Cable) :-
+     device(Device, Ports),
+
+commit 8c01c1a517eb8499f252075b43253fd51cb22796
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Made device_cable work finally!
+
+diff --git a/devices.pro b/devices.pro
+index 92642d2..c6e4331 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -67,13 +67,16 @@ device(digitech-processor, [
+ 
+ /* Rule: Devices connect their ports with cables
+ */
++/* device_cable/2 */
+ device_cable(Device, Cable) :-
+-    device(Device, [H|_]),
+-    port(H, Cable, _, Size),
++    device(Device, Ports),
++    device_cable(Device, Cable, Ports).
++/* device_cable/3 */
++device_cable(_, Cable, [Head|_]) :-
++    port(Head, Cable, _, Size),
+     full_cable(Cable, male, Size, _).
+-device_cable(Device, Cable) :-
+-    device(Device, [_|T]),
+-    device_cable(Device, T, Cable).
++device_cable(Device, Cable, [_|Tail]) :-
++    device_cable(Device, Cable, Tail).
+ 
+ /* Procedure: Show the ports for the given device. */
+ show_ports(Device) :-
+
+commit a8cee9888061bdc785e63bb1420e24d4f1a77c32
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Improved comments
+
+diff --git a/devices.pro b/devices.pro
+index 7322e1c..92642d2 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -2,14 +2,14 @@
+ :- ensure_loaded('ports.pro').
+ :- ensure_loaded('cables.pro').
+ /* ^^^ Load dependencies ^^^ */
+-/*********************************************************************
++/********************************************************************\
+ 
+ Program: Music studio device <=> Cable cross-referencer
+ Language: Prolog
+ Author: Gene Boggs
+ Start date: 2013-11-09
+ 
+-*********************************************************************/
++\********************************************************************/
+ 
+ /* Facts: The equipment records - device(Name, Ports) */
+ /* TODO Use DBI to declare these, instead of in-line hardcoding. */
+
+commit c79a480a9a29510e2f60398bbdc1fa381382a083
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Improved comment
+
+diff --git a/devices.pro b/devices.pro
+index 8a5f786..7322e1c 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -11,7 +11,7 @@ Start date: 2013-11-09
+ 
+ *********************************************************************/
+ 
+-/* Facts: The equipment records */
++/* Facts: The equipment records - device(Name, Ports) */
+ /* TODO Use DBI to declare these, instead of in-line hardcoding. */
+ device(maudio-monitors, [
+     left-quarter-in, right-quarter-in,
+
+commit 7f4a410d0b8791ea74d7fac5351d1a71a9748cbe
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Enhanced comments & improved import
+
+diff --git a/devices.pro b/devices.pro
+index 8d68317..8a5f786 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -5,8 +5,9 @@
+ /*********************************************************************
+ 
+ Program: Music studio device <=> Cable cross-referencer
++Language: Prolog
+ Author: Gene Boggs
+-Start date: 11/2013
++Start date: 2013-11-09
+ 
+ *********************************************************************/
+ 
+
+commit e52c468c1d173203ea71434a75eddac63bd25403
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Improved comments
+
+diff --git a/devices.pro b/devices.pro
+index 4d94f0b..8d68317 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -2,11 +2,16 @@
+ :- ensure_loaded('ports.pro').
+ :- ensure_loaded('cables.pro').
+ /* ^^^ Load dependencies ^^^ */
++/*********************************************************************
+ 
+-/* Music studio device <=> cable cross-referencer */
+-/* TODO Use DBI to declare this, instead of in-line hardcoding. */
++Program: Music studio device <=> Cable cross-referencer
++Author: Gene Boggs
++Start date: 11/2013
+ 
+-/* Declaration of the equipment records */
++*********************************************************************/
++
++/* Facts: The equipment records */
++/* TODO Use DBI to declare these, instead of in-line hardcoding. */
+ device(maudio-monitors, [
+     left-quarter-in, right-quarter-in,
+     left-rca-in, right-rca-in,
+@@ -69,7 +74,7 @@ device_cable(Device, Cable) :-
+     device(Device, [_|T]),
+     device_cable(Device, T, Cable).
+ 
+-/* Show the ports for the given device. */
++/* Procedure: Show the ports for the given device. */
+ show_ports(Device) :-
+     device(Device, Ports),
+     print_list(Ports).
+
+commit e2499a9f762c350406ac194fd0e434ffc2788e3d
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Loaded the deps in the right place: The file top
+
+diff --git a/devices.pro b/devices.pro
+index a66da89..4d94f0b 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -1,13 +1,11 @@
+ :- use_module(list_extras, [print_list/1]).
++:- ensure_loaded('ports.pro').
++:- ensure_loaded('cables.pro').
++/* ^^^ Load dependencies ^^^ */
+ 
+ /* Music studio device <=> cable cross-referencer */
+ /* TODO Use DBI to declare this, instead of in-line hardcoding. */
+ 
+-/* Load deps */
+-% XXX These don't import rules into the workspace. What the?
+-ensure_loaded('ports.pro').
+-ensure_loaded('cables.pro').
+-
+ /* Declaration of the equipment records */
+ device(maudio-monitors, [
+     left-quarter-in, right-quarter-in,
+
+commit ea944d223eb1ddb82e80c638af3d9d790b772a7b
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Multiple changes:
+    
+    Used module correctly
+    Replaced consult with friendlier ensure_loaded
+    Improved comments
+    Fixed experimental device_cable rule
+
+diff --git a/devices.pro b/devices.pro
+index ad16069..a66da89 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -1,12 +1,14 @@
++:- use_module(list_extras, [print_list/1]).
++
+ /* Music studio device <=> cable cross-referencer */
+ /* TODO Use DBI to declare this, instead of in-line hardcoding. */
+ 
+ /* Load deps */
+-use_module(list_extras, [print_list/1]).
+-%consult('ports.pro').
+-%consult('cables.pro').
++% XXX These don't import rules into the workspace. What the?
++ensure_loaded('ports.pro').
++ensure_loaded('cables.pro').
+ 
+-/* Declaration of the equipment record: */
++/* Declaration of the equipment records */
+ device(maudio-monitors, [
+     left-quarter-in, right-quarter-in,
+     left-rca-in, right-rca-in,
+@@ -60,15 +62,16 @@ device(digitech-processor, [
+     left-aux-return, right-aux-return ]).
+ 
+ /* Rule: Devices connect their ports with cables
+-device_connects(Device, Ports, Cable) :-
+-    [H|T] = Ports,
+-    port(H, EndA, _, Size),
+-    full_cable(Cable, male, Size, _).
+-device_connects(Device, Ports, Cable) :-
+-    [_|T] = Ports,
+-    device_connects(Device, T, Cable).
+ */
++device_cable(Device, Cable) :-
++    device(Device, [H|_]),
++    port(H, Cable, _, Size),
++    full_cable(Cable, male, Size, _).
++device_cable(Device, Cable) :-
++    device(Device, [_|T]),
++    device_cable(Device, T, Cable).
+ 
++/* Show the ports for the given device. */
+ show_ports(Device) :-
+     device(Device, Ports),
+     print_list(Ports).
+
+commit 6f50b7263c4ff4760093b210537e5f28ef7a5ff0
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Explicitly declare the imported functor
+
+diff --git a/devices.pro b/devices.pro
+index 9eb84f7..ad16069 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -2,7 +2,7 @@
+ /* TODO Use DBI to declare this, instead of in-line hardcoding. */
+ 
+ /* Load deps */
+-use_module(list_extras).
++use_module(list_extras, [print_list/1]).
+ %consult('ports.pro').
+ %consult('cables.pro').
+ 
+
+commit 959cf45cef4f345c3e30b7a157f8a95a6cdb7b00
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Used a module instead
+
+diff --git a/devices.pro b/devices.pro
+index 685145b..9eb84f7 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -1,11 +1,10 @@
+ /* Music studio device <=> cable cross-referencer */
+ /* TODO Use DBI to declare this, instead of in-line hardcoding. */
+ 
+-/* Load deps
+-consult('lists.pro').
+-consult('ports.pro').
+-consult('cables.pro').
+-*/
++/* Load deps */
++use_module(list_extras).
++%consult('ports.pro').
++%consult('cables.pro').
+ 
+ /* Declaration of the equipment record: */
+ device(maudio-monitors, [
+
+commit 38d123ea832f8740055de4937376ab5dc5e05acc
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Multiple changes:
+    
+    Note the dependencies to consult/2
+    Fixed port list line endings
+    Added experimental (& commented-out) rule
+    Added handy show_ports/1 rule
+
+diff --git a/devices.pro b/devices.pro
+index 2a6c2dc..685145b 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -1,12 +1,17 @@
+ /* Music studio device <=> cable cross-referencer */
+ /* TODO Use DBI to declare this, instead of in-line hardcoding. */
+ 
++/* Load deps
++consult('lists.pro').
++consult('ports.pro').
++consult('cables.pro').
++*/
++
+ /* Declaration of the equipment record: */
+ device(maudio-monitors, [
+     left-quarter-in, right-quarter-in,
+     left-rca-in, right-rca-in,
+-    left-wire-in, right-wire-in,
+-]).
++    left-wire-in, right-wire-in ]).
+ device(amplifier, [ left-quarter-in ]).
+ device(macbook-pro, [ stereo-mini-in, stereo-mini-out ]).
+ device(korg-ms2000r, [
+@@ -31,14 +36,12 @@ device(yamaha-dtxtreme-iii, [
+     quarter-out, quarter-out2,
+     quarter-out3, quarter-out4,
+     quarter-out5, quarter-out6,
+-    digital-out,
+-]).
++    digital-out ]).
+ device(maudio-keyboard-interface, [
+     midi-in, midi-out,
+     stereo-quarter-in,
+     quarter-in,
+-    xlr-in,
+-]).
++    xlr-in ]).
+ device(behringer-mixer, [
+     left-quarter-out, right-quarter-out,
+     quarter-out3, quarter-out4,
+@@ -50,12 +53,24 @@ device(behringer-mixer, [
+     left-rca-out, right-rca-out,
+     aux-send, aux-send2,
+     left-aux-return, right-aux-return,
+-    left-aux-return2, right-aux-return2,
+-]).
++    left-aux-return2, right-aux-return2 ]).
+ device(digitech-processor, [
+     midi-in, midi-out,
+     left-quarter-out, right-quarter-out,
+     aux-send, aux-send2,
+-    left-aux-return, right-aux-return,
+-]).
++    left-aux-return, right-aux-return ]).
++
++/* Rule: Devices connect their ports with cables
++device_connects(Device, Ports, Cable) :-
++    [H|T] = Ports,
++    port(H, EndA, _, Size),
++    full_cable(Cable, male, Size, _).
++device_connects(Device, Ports, Cable) :-
++    [_|T] = Ports,
++    device_connects(Device, T, Cable).
++*/
++
++show_ports(Device) :-
++    device(Device, Ports),
++    print_list(Ports).
+ 
+
+commit 3cfaa79649b08db671e4d129129ec92426ab235c
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    Purged non-audio connections
+
+diff --git a/devices.pro b/devices.pro
+index bf6f720..2a6c2dc 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -6,38 +6,25 @@ device(maudio-monitors, [
+     left-quarter-in, right-quarter-in,
+     left-rca-in, right-rca-in,
+     left-wire-in, right-wire-in,
+-    mini-headphone, power
+ ]).
+-device(amplifier, [ left-quarter-in, power ]).
+-device(sennheiser-headphones, [ stereo-quarter-in ]).
+-device(macbook-pro, [
+-    thumb-drive, pcmcia, usb-normal, firewire800,
+-    stereo-mini-in, stereo-mini-out,
+-    power]).
+-device(external-drive, [ firewire400 ]).
+-device(external-drive, [ usb-mini, firewire800, power ]).
++device(amplifier, [ left-quarter-in ]).
++device(macbook-pro, [ stereo-mini-in, stereo-mini-out ]).
+ device(korg-ms2000r, [
+     midi-in, midi-thru, midi-out,
+     left-quarter-in, right-quarter-in,
+-    left-quarter-out, right-quarter-out,
+-    program-change, keyboard-sustain,
+-    quarter-headphone, power]).
++    left-quarter-out, right-quarter-out ]).
+ device(nord-lead-ii, [
+     pcmcia,
+     midi-in, midi-thru, midi-out,
+     left-quarter-out, right-quarter-out,
+-    quarter-out3, quarter-out4,
+-    program-change, keyboard-sustain,
+-    quarter-headphone, power]).
++    quarter-out3, quarter-out4 ]).
+ device(roland-gr, [
+     midi-in, midi-out, roland-midi-in,
+     left-quarter-in, right-quarter-in,
+     left-quarter-out, right-quarter-out,
+-    guitar-quarter-out,
+-    power]).
++    guitar-quarter-out ]).
+ device(godin-acs, [ roland-midi-out, guitar-quarter-out ]).
+ device(yamaha-dtxtreme-iii, [
+-    thumb-drive, usb-normal,
+     midi-in, midi-out,
+     stereo-quarter-in,
+     left-quarter-out, right-quarter-out,
+@@ -45,14 +32,12 @@ device(yamaha-dtxtreme-iii, [
+     quarter-out3, quarter-out4,
+     quarter-out5, quarter-out6,
+     digital-out,
+-    quarter-headphone, power
+ ]).
+ device(maudio-keyboard-interface, [
+-    midi-in, midi-out, usb-large,
++    midi-in, midi-out,
+     stereo-quarter-in,
+     quarter-in,
+     xlr-in,
+-    power
+ ]).
+ device(behringer-mixer, [
+     left-quarter-out, right-quarter-out,
+@@ -66,14 +51,11 @@ device(behringer-mixer, [
+     aux-send, aux-send2,
+     left-aux-return, right-aux-return,
+     left-aux-return2, right-aux-return2,
+-    quarter-headphone, power
+ ]).
+ device(digitech-processor, [
+     midi-in, midi-out,
+     left-quarter-out, right-quarter-out,
+     aux-send, aux-send2,
+     left-aux-return, right-aux-return,
+-    program-change,
+-    quarter-headphone, power
+ ]).
+ 
+
+commit 685438412499de7fd0ea039b39a2b2d44b06b479
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    Fixed raw name
+
+diff --git a/devices.pro b/devices.pro
+index 374369e..bf6f720 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -5,7 +5,7 @@
+ device(maudio-monitors, [
+     left-quarter-in, right-quarter-in,
+     left-rca-in, right-rca-in,
+-    left-raw-wire-in, right-raw-wire-in,
++    left-wire-in, right-wire-in,
+     mini-headphone, power
+ ]).
+ device(amplifier, [ left-quarter-in, power ]).
+
+commit f9dc11d26e86972af32ff884351e394396898fa5
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    Removed "-switch" and instances of "trailing1"
+
+diff --git a/devices.pro b/devices.pro
+index 68f7bb8..374369e 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -20,14 +20,14 @@ device(korg-ms2000r, [
+     midi-in, midi-thru, midi-out,
+     left-quarter-in, right-quarter-in,
+     left-quarter-out, right-quarter-out,
+-    program-change-switch, keyboard-sustain,
++    program-change, keyboard-sustain,
+     quarter-headphone, power]).
+ device(nord-lead-ii, [
+     pcmcia,
+     midi-in, midi-thru, midi-out,
+     left-quarter-out, right-quarter-out,
+     quarter-out3, quarter-out4,
+-    program-change-switch, keyboard-sustain,
++    program-change, keyboard-sustain,
+     quarter-headphone, power]).
+ device(roland-gr, [
+     midi-in, midi-out, roland-midi-in,
+@@ -41,7 +41,7 @@ device(yamaha-dtxtreme-iii, [
+     midi-in, midi-out,
+     stereo-quarter-in,
+     left-quarter-out, right-quarter-out,
+-    quarter-out1, quarter-out2,
++    quarter-out, quarter-out2,
+     quarter-out3, quarter-out4,
+     quarter-out5, quarter-out6,
+     digital-out,
+@@ -63,17 +63,17 @@ device(behringer-mixer, [
+     quarter-in, quarter-in2, quarter-in3, quarter-in4,
+     left-rca-in, right-rca-in,
+     left-rca-out, right-rca-out,
+-    aux-send1, aux-send2,
+-    left-aux-return1, right-aux-return1,
++    aux-send, aux-send2,
++    left-aux-return, right-aux-return,
+     left-aux-return2, right-aux-return2,
+     quarter-headphone, power
+ ]).
+ device(digitech-processor, [
+     midi-in, midi-out,
+     left-quarter-out, right-quarter-out,
+-    aux-send1, aux-send2,
+-    left-aux-return1, right-aux-return1,
+-    program-change-switch,
++    aux-send, aux-send2,
++    left-aux-return, right-aux-return,
++    program-change,
+     quarter-headphone, power
+ ]).
+ 
+
+commit 58cae59b7323977aef11bcf2f1fb8983e23430ea
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    Multiple changes:
+    
+    Named fw ports
+    Fixed keyboard typo
+    Removed the 1 from xlr1 & quarter1
+
+diff --git a/devices.pro b/devices.pro
+index fb50edf..68f7bb8 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -11,11 +11,11 @@ device(maudio-monitors, [
+ device(amplifier, [ left-quarter-in, power ]).
+ device(sennheiser-headphones, [ stereo-quarter-in ]).
+ device(macbook-pro, [
+-    thumb-drive, pcmcia, usb-normal, firewire,
++    thumb-drive, pcmcia, usb-normal, firewire800,
+     stereo-mini-in, stereo-mini-out,
+     power]).
+-device(external-drive, [ firewire ]).
+-device(external-drive, [ usb-mini, firewire, power ]).
++device(external-drive, [ firewire400 ]).
++device(external-drive, [ usb-mini, firewire800, power ]).
+ device(korg-ms2000r, [
+     midi-in, midi-thru, midi-out,
+     left-quarter-in, right-quarter-in,
+@@ -47,7 +47,7 @@ device(yamaha-dtxtreme-iii, [
+     digital-out,
+     quarter-headphone, power
+ ]).
+-device(maudio-keybaord-interface, [
++device(maudio-keyboard-interface, [
+     midi-in, midi-out, usb-large,
+     stereo-quarter-in,
+     quarter-in,
+@@ -58,9 +58,9 @@ device(behringer-mixer, [
+     left-quarter-out, right-quarter-out,
+     quarter-out3, quarter-out4,
+     left-xlr-out, right-xlr-out,
+-    xlr-in1, xlr-in2, xlr-in3, xlr-in4,
++    xlr-in, xlr-in2, xlr-in3, xlr-in4,
+     xlr-in4, xlr-in5, xlr-in6, xlr-in7,
+-    quarter-in1, quarter-in2, quarter-in3, quarter-in4,
++    quarter-in, quarter-in2, quarter-in3, quarter-in4,
+     left-rca-in, right-rca-in,
+     left-rca-out, right-rca-out,
+     aux-send1, aux-send2,
+
+commit 254094aaf55cf13faafe4c965b2a37c5cb1376f3
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-10
+
+    Excised the chord predicate
+
+diff --git a/devices.pro b/devices.pro
+index 1fd132b..fb50edf 100644
+--- a/devices.pro
++++ b/devices.pro
+@@ -77,15 +77,3 @@ device(digitech-processor, [
+     quarter-headphone, power
+ ]).
+ 
+-/* Declaration of the cable record:
+- cord(enda, enda-type, endb, endb-type, y-split, number, length).
+-*/
+-cord(midi, male, midi, male).
+-cord(usb-large, female, usb-normal, female).
+-cord(quarter, male, quarter, male).
+-cord(quarter, male, quarter, male).
+-cord(quarter, male, quarter, female).
+-cord(quarter, female, quarter, female).
+-cord(mini, male, mini, male).
+-cord(mini, male, mini, female).
+-
+
+commit 731bc888a55e57f27343e4ad49bdb84ccbd3976f
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-10
+
+    Renamed to reflect functionality
+
+diff --git a/devices.pro b/devices.pro
+new file mode 100644
+index 0000000..1fd132b
+--- /dev/null
++++ b/devices.pro
+@@ -0,0 +1,91 @@
++/* Music studio device <=> cable cross-referencer */
++/* TODO Use DBI to declare this, instead of in-line hardcoding. */
++
++/* Declaration of the equipment record: */
++device(maudio-monitors, [
++    left-quarter-in, right-quarter-in,
++    left-rca-in, right-rca-in,
++    left-raw-wire-in, right-raw-wire-in,
++    mini-headphone, power
++]).
++device(amplifier, [ left-quarter-in, power ]).
++device(sennheiser-headphones, [ stereo-quarter-in ]).
++device(macbook-pro, [
++    thumb-drive, pcmcia, usb-normal, firewire,
++    stereo-mini-in, stereo-mini-out,
++    power]).
++device(external-drive, [ firewire ]).
++device(external-drive, [ usb-mini, firewire, power ]).
++device(korg-ms2000r, [
++    midi-in, midi-thru, midi-out,
++    left-quarter-in, right-quarter-in,
++    left-quarter-out, right-quarter-out,
++    program-change-switch, keyboard-sustain,
++    quarter-headphone, power]).
++device(nord-lead-ii, [
++    pcmcia,
++    midi-in, midi-thru, midi-out,
++    left-quarter-out, right-quarter-out,
++    quarter-out3, quarter-out4,
++    program-change-switch, keyboard-sustain,
++    quarter-headphone, power]).
++device(roland-gr, [
++    midi-in, midi-out, roland-midi-in,
++    left-quarter-in, right-quarter-in,
++    left-quarter-out, right-quarter-out,
++    guitar-quarter-out,
++    power]).
++device(godin-acs, [ roland-midi-out, guitar-quarter-out ]).
++device(yamaha-dtxtreme-iii, [
++    thumb-drive, usb-normal,
++    midi-in, midi-out,
++    stereo-quarter-in,
++    left-quarter-out, right-quarter-out,
++    quarter-out1, quarter-out2,
++    quarter-out3, quarter-out4,
++    quarter-out5, quarter-out6,
++    digital-out,
++    quarter-headphone, power
++]).
++device(maudio-keybaord-interface, [
++    midi-in, midi-out, usb-large,
++    stereo-quarter-in,
++    quarter-in,
++    xlr-in,
++    power
++]).
++device(behringer-mixer, [
++    left-quarter-out, right-quarter-out,
++    quarter-out3, quarter-out4,
++    left-xlr-out, right-xlr-out,
++    xlr-in1, xlr-in2, xlr-in3, xlr-in4,
++    xlr-in4, xlr-in5, xlr-in6, xlr-in7,
++    quarter-in1, quarter-in2, quarter-in3, quarter-in4,
++    left-rca-in, right-rca-in,
++    left-rca-out, right-rca-out,
++    aux-send1, aux-send2,
++    left-aux-return1, right-aux-return1,
++    left-aux-return2, right-aux-return2,
++    quarter-headphone, power
++]).
++device(digitech-processor, [
++    midi-in, midi-out,
++    left-quarter-out, right-quarter-out,
++    aux-send1, aux-send2,
++    left-aux-return1, right-aux-return1,
++    program-change-switch,
++    quarter-headphone, power
++]).
++
++/* Declaration of the cable record:
++ cord(enda, enda-type, endb, endb-type, y-split, number, length).
++*/
++cord(midi, male, midi, male).
++cord(usb-large, female, usb-normal, female).
++cord(quarter, male, quarter, male).
++cord(quarter, male, quarter, male).
++cord(quarter, male, quarter, female).
++cord(quarter, female, quarter, female).
++cord(mini, male, mini, male).
++cord(mini, male, mini, female).
++

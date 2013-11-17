@@ -1,0 +1,747 @@
+commit 8fe151e58e025bca94eaab6da26a6f70d26e58d8
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Moved to the Logical-Music-Studio
+
+diff --git a/cables.pro b/cables.pro
+deleted file mode 100644
+index 0acf6df..0000000
+--- a/cables.pro
++++ /dev/null
+@@ -1,97 +0,0 @@
+- /*-----------------------------------------------------------------*\
+-|
+-| Program: Music studio cable definitions
+-| Language: Prolog
+-| Author: Gene Boggs
+-|
+- \*-----------------------------------------------------------------*/
+-
+-/* 
+-  half_cable(EndA, Gender, Size)
+-  full_cable(EndA, EndB)
+-  y_cable(EndA, EndB)
+-  x_cable(EndA, EndB)
+-*/
+-
+-/* MIDI */
+-half_cable(midi, male, normal).
+-
+-/* RCA */
+-half_cable(rca, male,   normal).
+-half_cable(rca, female, normal).
+-
+-/* TRS */
+-half_cable(trs, male,   quarter).
+-half_cable(trs, female, quarter).
+-half_cable(trs, male,   mini).
+-half_cable(trs, female, mini).
+-
+-/* Raw! */
+-half_cable(raw, male, wire).
+-
+-/* XLR */
+-half_cable(xlr, male,   normal).
+-half_cable(xlr, female, normal).
+-
+-/* Exclude bogus cables like rca<=>usb etc. */
+-full_cable(midi, X) :- \+( X == midi ), !, fail.
+-full_cable(X, midi) :- \+( X == midi ), !, fail.
+-full_cable(raw, X)  :- \+( X == raw ),  !, fail.
+-full_cable(X, raw)  :- \+( X == raw ),  !, fail.
+-
+-/* A full-cable is two halves. */
+-full_cable(EndA, EndB) :-
+-    half_cable(EndA, _, _), half_cable(EndB, _, _).
+-/* A full-cable can also be called with properties specified */
+-full_cable(EndA, Gender, Size, EndB) :-
+-    half_cable(EndA, Gender, Size),
+-    half_cable(EndB, _, _).
+-
+-/* Exclude bogus cables like rca+rca<=>usb+usb etc. */
+-cable_pair(midi, X) :- \+( X == midi ), !, fail.
+-cable_pair(X, midi) :- \+( X == midi ), !, fail.
+-cable_pair(raw, X)  :- \+( X == raw ),  !, fail.
+-cable_pair(X, raw)  :- \+( X == raw ),  !, fail.
+-
+-/* A cable end pair */
+-cable_pair(EndA, male) :-
+-    half_cable(EndA, male, _), half_cable(EndA, male, _).
+-cable_pair(EndA, female) :-
+-    half_cable(EndA, female, _), half_cable(EndA, female, _).
+-
+-/* Exclude bogus cables like rca+rca<=>usb etc. */
+-y_cable(midi, X) :- \+( X == midi ), !, fail.
+-y_cable(X, midi) :- \+( X == midi ), !, fail.
+-y_cable(raw, X)  :- \+( X == raw ),  !, fail.
+-y_cable(X, raw)  :- \+( X == raw ),  !, fail.
+-
+-/* A Y-cable is three halves (usually a small adapter). */
+-y_cable(EndA, EndB) :-
+-    cable_pair(EndA, male),
+-    half_cable(EndB, male, _).
+-y_cable(EndA, EndB) :-
+-    cable_pair(EndA, male),
+-    half_cable(EndB, female, _).
+-y_cable(EndA, EndB) :-
+-    cable_pair(EndA, female),
+-    half_cable(EndB, female, _).
+-y_cable(EndA, EndB) :-
+-    cable_pair(EndA, female),
+-    half_cable(EndB, male, _).
+-
+-/* An X-cable is four halves (usually a stereo pair). */
+-x_cable(EndA, EndB) :-
+-    cable_pair(EndA, male),
+-    cable_pair(EndB, male).
+-x_cable(EndA, EndB) :-
+-    cable_pair(EndA, male),
+-    cable_pair(EndB, female).
+-x_cable(EndA, EndB) :-
+-    cable_pair(EndA, female),
+-    cable_pair(EndB, female).
+-
+-/* Example queries:
+-?- set_prolog_flag(toplevel_print_options, [quoted(true)]).
+-?- findall(X0, half_cable(X0, male, _), X).
+-X = [...
+-*/
+
+commit 202db81c792830c2ab10cdb819a1fd4208fcc4fc
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Improved header comment again!
+
+diff --git a/cables.pro b/cables.pro
+index a73b72d..0acf6df 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -1,10 +1,10 @@
+-/********************************************************************\
+-
+-Program: Music studio cable definitions
+-Language: Prolog
+-Author: Gene Boggs
+-
+-\********************************************************************/
++ /*-----------------------------------------------------------------*\
++|
++| Program: Music studio cable definitions
++| Language: Prolog
++| Author: Gene Boggs
++|
++ \*-----------------------------------------------------------------*/
+ 
+ /* 
+   half_cable(EndA, Gender, Size)
+
+commit 15e51615a459c6e785409d0c8e0fb633609e05c1
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Improved comments
+
+diff --git a/cables.pro b/cables.pro
+index a7d662b..a73b72d 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -1,10 +1,10 @@
+-/*********************************************************************
++/********************************************************************\
+ 
+ Program: Music studio cable definitions
+ Language: Prolog
+ Author: Gene Boggs
+ 
+-*********************************************************************/
++\********************************************************************/
+ 
+ /* 
+   half_cable(EndA, Gender, Size)
+
+commit 7f4a410d0b8791ea74d7fac5351d1a71a9748cbe
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Enhanced comments & improved import
+
+diff --git a/cables.pro b/cables.pro
+index 6066f06..a7d662b 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -1,4 +1,12 @@
+-/* Declaration of the cable record:
++/*********************************************************************
++
++Program: Music studio cable definitions
++Language: Prolog
++Author: Gene Boggs
++
++*********************************************************************/
++
++/* 
+   half_cable(EndA, Gender, Size)
+   full_cable(EndA, EndB)
+   y_cable(EndA, EndB)
+
+commit 99ea1619b2ef56a6df920b99d5d207f2dd2dbb04
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-16
+
+    Made a full_cable() rule to call with properties
+
+diff --git a/cables.pro b/cables.pro
+index d208c07..6066f06 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -34,6 +34,10 @@ full_cable(X, raw)  :- \+( X == raw ),  !, fail.
+ /* A full-cable is two halves. */
+ full_cable(EndA, EndB) :-
+     half_cable(EndA, _, _), half_cable(EndB, _, _).
++/* A full-cable can also be called with properties specified */
++full_cable(EndA, Gender, Size, EndB) :-
++    half_cable(EndA, Gender, Size),
++    half_cable(EndB, _, _).
+ 
+ /* Exclude bogus cables like rca+rca<=>usb+usb etc. */
+ cable_pair(midi, X) :- \+( X == midi ), !, fail.
+
+commit 5c9d02dfbc93270c248f572f0ceea37da55d9941
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-13
+
+    Improved header comment and vertical whitespace
+
+diff --git a/cables.pro b/cables.pro
+index 0a0bbb1..d208c07 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -1,4 +1,9 @@
+-/* Declaration of the cable record: half_cable(End, Gender, Size) */
++/* Declaration of the cable record:
++  half_cable(EndA, Gender, Size)
++  full_cable(EndA, EndB)
++  y_cable(EndA, EndB)
++  x_cable(EndA, EndB)
++*/
+ 
+ /* MIDI */
+ half_cable(midi, male, normal).
+@@ -21,20 +26,20 @@ half_cable(xlr, male,   normal).
+ half_cable(xlr, female, normal).
+ 
+ /* Exclude bogus cables like rca<=>usb etc. */
+-full_cable(midi, X)  :- \+( X == midi ),  !, fail.
+-full_cable(X, midi)  :- \+( X == midi ),  !, fail.
+-full_cable(raw, X)   :- \+( X == raw ),   !, fail.
+-full_cable(X, raw)   :- \+( X == raw ),   !, fail.
++full_cable(midi, X) :- \+( X == midi ), !, fail.
++full_cable(X, midi) :- \+( X == midi ), !, fail.
++full_cable(raw, X)  :- \+( X == raw ),  !, fail.
++full_cable(X, raw)  :- \+( X == raw ),  !, fail.
+ 
+ /* A full-cable is two halves. */
+ full_cable(EndA, EndB) :-
+     half_cable(EndA, _, _), half_cable(EndB, _, _).
+ 
+ /* Exclude bogus cables like rca+rca<=>usb+usb etc. */
+-cable_pair(midi, X)  :- \+( X == midi ),  !, fail.
+-cable_pair(X, midi)  :- \+( X == midi ),  !, fail.
+-cable_pair(raw, X)   :- \+( X == raw ),   !, fail.
+-cable_pair(X, raw)   :- \+( X == raw ),   !, fail.
++cable_pair(midi, X) :- \+( X == midi ), !, fail.
++cable_pair(X, midi) :- \+( X == midi ), !, fail.
++cable_pair(raw, X)  :- \+( X == raw ),  !, fail.
++cable_pair(X, raw)  :- \+( X == raw ),  !, fail.
+ 
+ /* A cable end pair */
+ cable_pair(EndA, male) :-
+@@ -43,10 +48,10 @@ cable_pair(EndA, female) :-
+     half_cable(EndA, female, _), half_cable(EndA, female, _).
+ 
+ /* Exclude bogus cables like rca+rca<=>usb etc. */
+-y_cable(midi, X)  :- \+( X == midi ),  !, fail.
+-y_cable(X, midi)  :- \+( X == midi ),  !, fail.
+-y_cable(raw, X)   :- \+( X == raw ),   !, fail.
+-y_cable(X, raw)   :- \+( X == raw ),   !, fail.
++y_cable(midi, X) :- \+( X == midi ), !, fail.
++y_cable(X, midi) :- \+( X == midi ), !, fail.
++y_cable(raw, X)  :- \+( X == raw ),  !, fail.
++y_cable(X, raw)  :- \+( X == raw ),  !, fail.
+ 
+ /* A Y-cable is three halves (usually a small adapter). */
+ y_cable(EndA, EndB) :-
+
+commit 878969060ca5ad9ef9512aa63796896c868ecbf4
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    Purged non-audio specific elements
+
+diff --git a/cables.pro b/cables.pro
+index 2674d95..0a0bbb1 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -20,70 +20,61 @@ half_cable(raw, male, wire).
+ half_cable(xlr, male,   normal).
+ half_cable(xlr, female, normal).
+ 
+-/* Miscelaneous */
+-half_cable(power, male, barrel).
+-
+-/* Storage */
+-half_cable(usb,   male, mini).
+-half_cable(usb,   male, normal).
+-half_cable(usb,   male, large).
+-half_cable(fw,    male, 400).
+-half_cable(fw,    male, 800).
+-half_cable(flash, male, typei).
+-
+-/* Restrict bogus cables like rca<=>usb etc. with fail. */
++/* Exclude bogus cables like rca<=>usb etc. */
+ full_cable(midi, X)  :- \+( X == midi ),  !, fail.
+ full_cable(X, midi)  :- \+( X == midi ),  !, fail.
+ full_cable(raw, X)   :- \+( X == raw ),   !, fail.
+ full_cable(X, raw)   :- \+( X == raw ),   !, fail.
+-full_cable(power, X) :- \+( X == power ), !, fail.
+-full_cable(X, power) :- \+( X == power ), !, fail.
+-full_cable(usb, X)   :- \+( X == usb ),   !, fail.
+-full_cable(X, usb)   :- \+( X == usb ),   !, fail.
+-full_cable(fw, X)    :- \+( X == fw ),    !, fail.
+-full_cable(X, fw)    :- \+( X == fw ),    !, fail.
+-full_cable(flash, X) :- \+( X == flash ), !, fail.
+-full_cable(X, flash) :- \+( X == flash ), !, fail.
+ 
+ /* A full-cable is two halves. */
+ full_cable(EndA, EndB) :-
+     half_cable(EndA, _, _), half_cable(EndB, _, _).
+ 
++/* Exclude bogus cables like rca+rca<=>usb+usb etc. */
++cable_pair(midi, X)  :- \+( X == midi ),  !, fail.
++cable_pair(X, midi)  :- \+( X == midi ),  !, fail.
++cable_pair(raw, X)   :- \+( X == raw ),   !, fail.
++cable_pair(X, raw)   :- \+( X == raw ),   !, fail.
++
+ /* A cable end pair */
+-cable_pair(EndA, male, male) :-
++cable_pair(EndA, male) :-
+     half_cable(EndA, male, _), half_cable(EndA, male, _).
+-cable_pair(EndA, male, female) :-
+-    half_cable(EndA, male, _), half_cable(EndA, female, _).
+-cable_pair(EndA, female, female) :-
++cable_pair(EndA, female) :-
+     half_cable(EndA, female, _), half_cable(EndA, female, _).
+ 
++/* Exclude bogus cables like rca+rca<=>usb etc. */
++y_cable(midi, X)  :- \+( X == midi ),  !, fail.
++y_cable(X, midi)  :- \+( X == midi ),  !, fail.
++y_cable(raw, X)   :- \+( X == raw ),   !, fail.
++y_cable(X, raw)   :- \+( X == raw ),   !, fail.
++
+ /* A Y-cable is three halves (usually a small adapter). */
+ y_cable(EndA, EndB) :-
+-    cable_pair(EndA, male, male),
++    cable_pair(EndA, male),
+     half_cable(EndB, male, _).
+ y_cable(EndA, EndB) :-
+-    cable_pair(EndA, male, male),
++    cable_pair(EndA, male),
+     half_cable(EndB, female, _).
+ y_cable(EndA, EndB) :-
+-    cable_pair(EndA, female, female),
++    cable_pair(EndA, female),
+     half_cable(EndB, female, _).
+ y_cable(EndA, EndB) :-
+-    cable_pair(EndA, female, female),
++    cable_pair(EndA, female),
+     half_cable(EndB, male, _).
+ 
+ /* An X-cable is four halves (usually a stereo pair). */
+ x_cable(EndA, EndB) :-
+-    cable_pair(EndA, male, male),
+-    cable_pair(EndB, male, male).
++    cable_pair(EndA, male),
++    cable_pair(EndB, male).
+ x_cable(EndA, EndB) :-
+-    cable_pair(EndA, male, male),
+-    cable_pair(EndB, female, female).
++    cable_pair(EndA, male),
++    cable_pair(EndB, female).
+ x_cable(EndA, EndB) :-
+-    cable_pair(EndA, female, female),
+-    cable_pair(EndB, female, female).
++    cable_pair(EndA, female),
++    cable_pair(EndB, female).
+ 
+ /* Example queries:
+ ?- set_prolog_flag(toplevel_print_options, [quoted(true)]).
+ ?- findall(X0, half_cable(X0, male, _), X).
+-X = [midi,rca,trs,trs,raw,xlr,power,usb,usb,usb,fw,fw,flash].
++X = [...
+ */
+
+commit 55753d677c03e971138b73bea5439092408b8274
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    Restrict certain certain cable types. Add examples
+
+diff --git a/cables.pro b/cables.pro
+index 6c0685b..2674d95 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -31,6 +31,20 @@ half_cable(fw,    male, 400).
+ half_cable(fw,    male, 800).
+ half_cable(flash, male, typei).
+ 
++/* Restrict bogus cables like rca<=>usb etc. with fail. */
++full_cable(midi, X)  :- \+( X == midi ),  !, fail.
++full_cable(X, midi)  :- \+( X == midi ),  !, fail.
++full_cable(raw, X)   :- \+( X == raw ),   !, fail.
++full_cable(X, raw)   :- \+( X == raw ),   !, fail.
++full_cable(power, X) :- \+( X == power ), !, fail.
++full_cable(X, power) :- \+( X == power ), !, fail.
++full_cable(usb, X)   :- \+( X == usb ),   !, fail.
++full_cable(X, usb)   :- \+( X == usb ),   !, fail.
++full_cable(fw, X)    :- \+( X == fw ),    !, fail.
++full_cable(X, fw)    :- \+( X == fw ),    !, fail.
++full_cable(flash, X) :- \+( X == flash ), !, fail.
++full_cable(X, flash) :- \+( X == flash ), !, fail.
++
+ /* A full-cable is two halves. */
+ full_cable(EndA, EndB) :-
+     half_cable(EndA, _, _), half_cable(EndB, _, _).
+@@ -68,3 +82,8 @@ x_cable(EndA, EndB) :-
+     cable_pair(EndA, female, female),
+     cable_pair(EndB, female, female).
+ 
++/* Example queries:
++?- set_prolog_flag(toplevel_print_options, [quoted(true)]).
++?- findall(X0, half_cable(X0, male, _), X).
++X = [midi,rca,trs,trs,raw,xlr,power,usb,usb,usb,fw,fw,flash].
++*/
+
+commit 7eb21c557d227e7983c747e4ee4210227c210f71
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    Created & reused cable_pair()
+
+diff --git a/cables.pro b/cables.pro
+index e530af1..6c0685b 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -1,6 +1,4 @@
+-/* Declaration of the cable record:
+-half_cable(End, Gender, Size)
+-*/
++/* Declaration of the cable record: half_cable(End, Gender, Size) */
+ 
+ /* MIDI */
+ half_cable(midi, male, normal).
+@@ -33,32 +31,40 @@ half_cable(fw,    male, 400).
+ half_cable(fw,    male, 800).
+ half_cable(flash, male, typei).
+ 
+-/* A full-cable is two halves.
++/* A full-cable is two halves. */
+ full_cable(EndA, EndB) :-
+     half_cable(EndA, _, _), half_cable(EndB, _, _).
+ 
+-/* A Y-cable is three halves (usually a small adapter).
++/* A cable end pair */
++cable_pair(EndA, male, male) :-
++    half_cable(EndA, male, _), half_cable(EndA, male, _).
++cable_pair(EndA, male, female) :-
++    half_cable(EndA, male, _), half_cable(EndA, female, _).
++cable_pair(EndA, female, female) :-
++    half_cable(EndA, female, _), half_cable(EndA, female, _).
++
++/* A Y-cable is three halves (usually a small adapter). */
+ y_cable(EndA, EndB) :-
+-    half_cable(EndA, male,  _),  half_cable(EndA, male,   _),
+-    half_cable(EndB, male,  _).
++    cable_pair(EndA, male, male),
++    half_cable(EndB, male, _).
+ y_cable(EndA, EndB) :-
+-    half_cable(EndA, male,   _), half_cable(EndA, male,   _),
++    cable_pair(EndA, male, male),
+     half_cable(EndB, female, _).
+ y_cable(EndA, EndB) :-
+-    half_cable(EndA, female, _), half_cable(EndA, female, _),
++    cable_pair(EndA, female, female),
+     half_cable(EndB, female, _).
+ y_cable(EndA, EndB) :-
+-    half_cable(EndA, female, _), half_cable(EndA, female, _),
+-    half_cable(EndB, male,   _).
++    cable_pair(EndA, female, female),
++    half_cable(EndB, male, _).
+ 
+-/* An X-cable is four halves (usually a stereo pair in audio).
++/* An X-cable is four halves (usually a stereo pair). */
+ x_cable(EndA, EndB) :-
+-    half_cable(EndA, male, _), half_cable(EndA, male, _),
+-    half_cable(EndB, male, _), half_cable(EndB, male, _).
++    cable_pair(EndA, male, male),
++    cable_pair(EndB, male, male).
+ x_cable(EndA, EndB) :-
+-    half_cable(EndA, male,   _), half_cable(EndA, male, _),
+-    half_cable(EndB, female, _), half_cable(EndB, female, _).
++    cable_pair(EndA, male, male),
++    cable_pair(EndB, female, female).
+ x_cable(EndA, EndB) :-
+-    half_cable(EndA, female, _), half_cable(EndA, female, _),
+-    half_cable(EndB, female, _), half_cable(EndB, female, _).
++    cable_pair(EndA, female, female),
++    cable_pair(EndB, female, female).
+ 
+
+commit e502ac6a60b9b26068fdbd578c9bb61046faec77
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    Fleshed-out Y & X-cables
+
+diff --git a/cables.pro b/cables.pro
+index ba30e7c..e530af1 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -39,11 +39,26 @@ full_cable(EndA, EndB) :-
+ 
+ /* A Y-cable is three halves (usually a small adapter).
+ y_cable(EndA, EndB) :-
+-    half_cable(EndA, _, _), half_cable(EndA, _, _),
+-    half_cable(EndB, _, _).
++    half_cable(EndA, male,  _),  half_cable(EndA, male,   _),
++    half_cable(EndB, male,  _).
++y_cable(EndA, EndB) :-
++    half_cable(EndA, male,   _), half_cable(EndA, male,   _),
++    half_cable(EndB, female, _).
++y_cable(EndA, EndB) :-
++    half_cable(EndA, female, _), half_cable(EndA, female, _),
++    half_cable(EndB, female, _).
++y_cable(EndA, EndB) :-
++    half_cable(EndA, female, _), half_cable(EndA, female, _),
++    half_cable(EndB, male,   _).
+ 
+ /* An X-cable is four halves (usually a stereo pair in audio).
+ x_cable(EndA, EndB) :-
+-    half_cable(EndA, _, _), half_cable(EndA, _, _),
+-    half_cable(EndB, _, _), half_cable(EndB, _, _).
++    half_cable(EndA, male, _), half_cable(EndA, male, _),
++    half_cable(EndB, male, _), half_cable(EndB, male, _).
++x_cable(EndA, EndB) :-
++    half_cable(EndA, male,   _), half_cable(EndA, male, _),
++    half_cable(EndB, female, _), half_cable(EndB, female, _).
++x_cable(EndA, EndB) :-
++    half_cable(EndA, female, _), half_cable(EndA, female, _),
++    half_cable(EndB, female, _), half_cable(EndB, female, _).
+ 
+
+commit 37e734e70f1c6df3c9ece2240bba51812626a2ff
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    Fixed atom order for the trs clauses
+
+diff --git a/cables.pro b/cables.pro
+index 773a348..ba30e7c 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -10,10 +10,10 @@ half_cable(rca, male,   normal).
+ half_cable(rca, female, normal).
+ 
+ /* TRS */
+-half_cable(trs, quarter, male).
+-half_cable(trs, quarter, female).
+-half_cable(trs, mini,    male).
+-half_cable(trs, mini,    female).
++half_cable(trs, male,   quarter).
++half_cable(trs, female, quarter).
++half_cable(trs, male,   mini).
++half_cable(trs, female, mini).
+ 
+ /* Raw! */
+ half_cable(raw, male, wire).
+
+commit 057d8a16bc17a0427e02932c08909e7a68875bf8
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    Fixed header comment and clause syntax
+
+diff --git a/cables.pro b/cables.pro
+index a447c9a..773a348 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -1,5 +1,5 @@
+ /* Declaration of the cable record:
+-cable(EndA, GenderA, SizeA, EndB, GenderB, SizeB)
++half_cable(End, Gender, Size)
+ */
+ 
+ /* MIDI */
+@@ -16,7 +16,7 @@ half_cable(trs, mini,    male).
+ half_cable(trs, mini,    female).
+ 
+ /* Raw! */
+-half_cable(raw, male).
++half_cable(raw, male, wire).
+ 
+ /* XLR */
+ half_cable(xlr, male,   normal).
+
+commit 998b53abfd35b596bc28e9b7ad93024855ac782f
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    Enhanced *_cable() rules
+
+diff --git a/cables.pro b/cables.pro
+index ac5e065..a447c9a 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -34,16 +34,16 @@ half_cable(fw,    male, 800).
+ half_cable(flash, male, typei).
+ 
+ /* A full-cable is two halves.
+-cable(Type) :-
+-    half_cable(Type, _, _), half_cable(Type, _, _).
++full_cable(EndA, EndB) :-
++    half_cable(EndA, _, _), half_cable(EndB, _, _).
+ 
+ /* A Y-cable is three halves (usually a small adapter).
+-cable(Type) :-
+-    half_cable(Type, _, _), half_cable(Type, _, _),
+-    half_cable(Type, _, _).
++y_cable(EndA, EndB) :-
++    half_cable(EndA, _, _), half_cable(EndA, _, _),
++    half_cable(EndB, _, _).
+ 
+ /* An X-cable is four halves (usually a stereo pair in audio).
+-cable(Type) :-
+-    half_cable(Type, _, _), half_cable(Type, _, _),
+-    half_cable(Type, _, _), half_cable(Type, _, _).
++x_cable(EndA, EndB) :-
++    half_cable(EndA, _, _), half_cable(EndA, _, _),
++    half_cable(EndB, _, _), half_cable(EndB, _, _).
+ 
+
+commit 44f1ef12f4044e4723eac2af20f201e16b221dc7
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    WIP: First attempt at making a rule from scratch
+
+diff --git a/cables.pro b/cables.pro
+index f351981..ac5e065 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -32,3 +32,18 @@ half_cable(usb,   male, large).
+ half_cable(fw,    male, 400).
+ half_cable(fw,    male, 800).
+ half_cable(flash, male, typei).
++
++/* A full-cable is two halves.
++cable(Type) :-
++    half_cable(Type, _, _), half_cable(Type, _, _).
++
++/* A Y-cable is three halves (usually a small adapter).
++cable(Type) :-
++    half_cable(Type, _, _), half_cable(Type, _, _),
++    half_cable(Type, _, _).
++
++/* An X-cable is four halves (usually a stereo pair in audio).
++cable(Type) :-
++    half_cable(Type, _, _), half_cable(Type, _, _),
++    half_cable(Type, _, _), half_cable(Type, _, _).
++
+
+commit fa1cfe0d0eaf9f71f5704c1e0dce6030f8fafb9b
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-12
+
+    Halved the cables. Next: full-cable rules
+
+diff --git a/cables.pro b/cables.pro
+index 6c181e4..f351981 100644
+--- a/cables.pro
++++ b/cables.pro
+@@ -1,14 +1,34 @@
+-/* Declaration of the cable record: */
+-cable(power, _).
+-cable(midi, midi).
+-cable(firewire-type800, firewire-t800).
+-cable(firewire-type400, firewire-t800).
+-cable(quarter, male, quarter, male).
+-cable(quarter, male, quarter, male).
+-cable(quarter, male, quarter, female).
+-cable(quarter, female, quarter, female).
+-cable(mini, male, mini, male).
+-cable(mini, male, mini, female).
+-cable(usb-large, usb-normal).
+-cable(usb-normal, usb-normal).
+-cable(usb-normal, usb-mini).
++/* Declaration of the cable record:
++cable(EndA, GenderA, SizeA, EndB, GenderB, SizeB)
++*/
++
++/* MIDI */
++half_cable(midi, male, normal).
++
++/* RCA */
++half_cable(rca, male,   normal).
++half_cable(rca, female, normal).
++
++/* TRS */
++half_cable(trs, quarter, male).
++half_cable(trs, quarter, female).
++half_cable(trs, mini,    male).
++half_cable(trs, mini,    female).
++
++/* Raw! */
++half_cable(raw, male).
++
++/* XLR */
++half_cable(xlr, male,   normal).
++half_cable(xlr, female, normal).
++
++/* Miscelaneous */
++half_cable(power, male, barrel).
++
++/* Storage */
++half_cable(usb,   male, mini).
++half_cable(usb,   male, normal).
++half_cable(usb,   male, large).
++half_cable(fw,    male, 400).
++half_cable(fw,    male, 800).
++half_cable(flash, male, typei).
+
+commit f92804e24ae1dd647b160aa4f0d734aee77592db
+Author: Gene Boggs <gene.boggs@gmail.com>
+Date:   2013-11-11
+
+    Added the crucial cord connector file
+
+diff --git a/cables.pro b/cables.pro
+new file mode 100644
+index 0000000..6c181e4
+--- /dev/null
++++ b/cables.pro
+@@ -0,0 +1,14 @@
++/* Declaration of the cable record: */
++cable(power, _).
++cable(midi, midi).
++cable(firewire-type800, firewire-t800).
++cable(firewire-type400, firewire-t800).
++cable(quarter, male, quarter, male).
++cable(quarter, male, quarter, male).
++cable(quarter, male, quarter, female).
++cable(quarter, female, quarter, female).
++cable(mini, male, mini, male).
++cable(mini, male, mini, female).
++cable(usb-large, usb-normal).
++cable(usb-normal, usb-normal).
++cable(usb-normal, usb-mini).
