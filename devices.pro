@@ -12,7 +12,8 @@
  \*-----------------------------------------------------------------*/
 
 /* Facts: The equipment records - device(Name, Ports) */
-/* TODO Use DBI to declare these, instead of in-line hardcoding. */
+/* TODO Use DBI to declare facts, instead of hardcoding. */
+
 device(maudio-monitors, [
     left-quarter-in, right-quarter-in,
     left-rca-in, right-rca-in,

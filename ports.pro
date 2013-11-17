@@ -10,6 +10,7 @@
  \*-----------------------------------------------------------------*/
 
 /* port(Name_on_devices, Type, IO, Size) */
+/* TODO Use DBI to declare facts, instead of hardcoding. */
 
 /* MIDI */
 port(midi-in,           midi, in,  normal).

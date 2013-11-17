@@ -7,6 +7,7 @@
  \*-----------------------------------------------------------------*/
 
 /* half_cable(EndA, Gender, Size) */
+/* TODO Use DBI to declare facts, instead of hardcoding. */
 
 /* MIDI */
 half_cable(midi, male, normal).
