@@ -69,11 +69,10 @@ port(xlr-in5,       xlr, in,  normal).
 port(xlr-in6,       xlr, in,  normal).
 port(xlr-in7,       xlr, in,  normal).
 
-/* For illustration purposes:
-connects(Port, EndA, _) :-
+/* For illustration purposes */
+half_connects(Port, EndA, _) :-
     port(Port, EndA, _, Size),
     half_cable(EndA, male, Size).
-*/
 
 /* Rule: Ports connect with cables */
 connects(Port, EndA, _) :-
