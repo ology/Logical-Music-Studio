@@ -14,41 +14,41 @@
 /* Facts: The equipment records - device(Name, Ports) */
 /* TODO Use DBI to declare facts, instead of hardcoding. */
 
-device(maudio-monitors, [
-    left-quarter-in, right-quarter-in,
+device(maudio-monitors,
+  [ left-quarter-in, right-quarter-in,
     left-rca-in, right-rca-in,
     left-wire-in, right-wire-in ]).
 device(amplifier, [ left-quarter-in ]).
 device(macbook-pro, [ stereo-mini-in, stereo-mini-out ]).
-device(korg-ms2000r, [
-    midi-in, midi-thru, midi-out,
+device(korg-ms2000r,
+  [ midi-in, midi-thru, midi-out,
     left-quarter-in, right-quarter-in,
     left-quarter-out, right-quarter-out ]).
-device(nord-lead-ii, [
-    midi-in, midi-thru, midi-out,
+device(nord-lead-ii,
+  [ midi-in, midi-thru, midi-out,
     left-quarter-out, right-quarter-out,
     quarter-out3, quarter-out4 ]).
-device(roland-gr, [
-    midi-in, midi-out, roland-midi-in,
+device(roland-gr,
+  [ midi-in, midi-out, roland-midi-in,
     left-quarter-in, right-quarter-in,
     left-quarter-out, right-quarter-out,
     quarter-out ]).
 device(godin-acs, [ roland-midi-out, quarter-out ]).
-device(yamaha-dtxtreme-iii, [
-    midi-in, midi-out,
+device(yamaha-dtxtreme-iii,
+  [ midi-in, midi-out,
     stereo-quarter-in,
     left-quarter-out, right-quarter-out,
     quarter-out, quarter-out2,
     quarter-out3, quarter-out4,
     quarter-out5, quarter-out6,
     digital-out ]).
-device(maudio-keyboard-interface, [
-    midi-in, midi-out,
+device(maudio-keyboard-interface,
+  [ midi-in, midi-out,
     stereo-quarter-in,
     quarter-in,
     xlr-in ]).
-device(behringer-mixer, [
-    left-quarter-out, right-quarter-out,
+device(behringer-mixer,
+  [ left-quarter-out, right-quarter-out,
     quarter-out3, quarter-out4,
     left-xlr-out, right-xlr-out,
     xlr-in, xlr-in2, xlr-in3, xlr-in4,
@@ -59,8 +59,8 @@ device(behringer-mixer, [
     aux-send, aux-send2,
     left-aux-return, right-aux-return,
     left-aux-return2, right-aux-return2 ]).
-device(digitech-processor, [
-    midi-in, midi-out,
+device(digitech-processor,
+  [ midi-in, midi-out,
     left-quarter-out, right-quarter-out,
     aux-send, aux-send2,
     left-aux-return, right-aux-return ]).
