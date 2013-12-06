@@ -35,6 +35,8 @@ full_cable(midi, X) :- \+( X == midi ), !, fail.
 full_cable(X, midi) :- \+( X == midi ), !, fail.
 full_cable(raw, X)  :- \+( X == raw ),  !, fail.
 full_cable(X, raw)  :- \+( X == raw ),  !, fail.
+full_cable(usb, X)  :- \+( X == usb ),  !, fail.
+full_cable(X, usb)  :- \+( X == usb ),  !, fail.
 
 /* A full-cable is two halves. */
 full_cable(EndA, EndB) :-
@@ -49,6 +51,8 @@ cable_pair(midi, X) :- \+( X == midi ), !, fail.
 cable_pair(X, midi) :- \+( X == midi ), !, fail.
 cable_pair(raw, X)  :- \+( X == raw ),  !, fail.
 cable_pair(X, raw)  :- \+( X == raw ),  !, fail.
+cable_pair(usb, X)  :- \+( X == usb ),  !, fail.
+cable_pair(X, usb)  :- \+( X == usb ),  !, fail.
 
 /* A cable end pair */
 cable_pair(EndA, male) :-
